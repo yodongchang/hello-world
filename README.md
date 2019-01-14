@@ -1,2 +1,2 @@
-snake
-my first repository
+my first code: snake
+
