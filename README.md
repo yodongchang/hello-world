@@ -1,2 +1,2 @@
-# hello-world
+snake
 my first repository
