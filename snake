@@ -1,0 +1,171 @@
+#include <graphics.h>
+#include <windows.h>
+#include <conio.h>
+
+//定义蛇的最大长度
+#define SNAKELENGTH 500
+
+enum Direct
+{
+	up = 72,
+	down = 80,
+	left = 75,
+	right = 77, 
+};
+
+struct Coor
+{
+	int x;
+	int y;
+};
+
+struct Snake
+{
+	//一条蛇的属性
+	int n; //蛇当前的节数，每一节蛇是一个正方形 n个正方形
+	struct Coor szb[SNAKELENGTH];//用来存放蛇的坐标
+	Direct dir;
+}snake;
+
+struct Food
+{
+	Coor fzb;//食物的坐标
+	int flag;//食物是否被吃的标志
+}food;
+
+
+void InitSnake();
+void DrawSnake();
+void MoveSnake();
+void ChangeSnakeDir();
+void CoorFood();
+void DrawFood();
+void EatFood();
+
+int main()
+{	
+	InitSnake();
+	
+	while(1)
+	{
+		while(!kbhit())//未按方向键之前
+		{
+			if(food.flag == 0)
+			{
+				CoorFood();
+			}
+			cleardevice();
+			MoveSnake();
+			DrawFood();
+			DrawSnake();
+			EatFood();
+			Sleep(200);
+		}
+			ChangeSnakeDir();//按方向键之后
+	}
+
+	return 0;
+}
+
+//初始化蛇
+void InitSnake()
+{
+	//初始化窗口
+	initgraph(640, 480);
+
+	//初始化音乐
+
+	//初始化蛇
+	snake.n = 2;
+
+	snake.szb[0].x = 10;
+	snake.szb[0].y = 10;
+	snake.szb[1].x = 0;
+	snake.szb[1].y = 0;
+}
+
+//绘制蛇
+void DrawSnake()
+{
+	setlinecolor(BLACK);
+	setfillcolor(YELLOW);
+
+	for(int i=0; i<snake.n; i++)
+	{
+		fillrectangle(snake.szb[i].x, snake.szb[i].y, 
+					snake.szb[i].x + 10, snake.szb[i].y + 10);
+	}
+}
+
+//移动蛇
+void MoveSnake()
+{
+	for(int i=snake.n-1; i>0; i--)
+	{
+		snake.szb[i].x = snake.szb[i-1].x;
+		snake.szb[i].y = snake.szb[i-1].y;
+	}
+	
+	switch(snake.dir)
+	{
+		case up:
+			snake.szb[0].y -= 10;
+			break;
+		case down:
+			snake.szb[0].y += 10;
+			break;	
+		case left:
+			snake.szb[0].x -= 10;
+			break;
+		case right:
+			snake.szb[0].x += 10;
+			break;
+	}
+}
+
+//通过键盘来控制
+void ChangeSnakeDir()
+{
+	int move;
+	move = getch();
+	switch(move)
+	{
+		case up:
+			snake.dir = up;
+			break;
+		case down:
+			snake.dir = down;
+			break;
+		case left:
+			snake.dir = left;
+			break;
+		case right:
+			snake.dir = right;
+			break;
+	}
+}
+
+//先得到食物的坐标
+void CoorFood()
+{
+	food.fzb.x = rand()%64*10;
+	food.fzb.y = rand()%48*10;
+
+	food.flag = 1;
+}
+
+//绘制食物
+void DrawFood()
+{
+	fillroundrect(food.fzb.x, food.fzb.y, food.fzb.x + 10, food.fzb.y + 10, 10, 10);//圆角矩形，但是可以做成圆形
+}
+
+void EatFood()
+{
+	//判断是否吃到食物，就是矩形和圆角矩形的坐标重合 
+	if(snake.szb[0].x == food.fzb.x && snake.szb[0].y == food.fzb.y)
+	{
+		snake.n++;
+		food.flag = 0;
+	}
+}
